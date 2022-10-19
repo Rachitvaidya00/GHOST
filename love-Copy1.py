@@ -1,10 +1,3 @@
-#!/usr/bin/env python
-# coding: utf-8
-
-# In[1]:
-
-
-
 import turtle
 
 # Creating a turtle object(pen)
@@ -73,16 +66,3 @@ txt()
 
 # To hide turtle
 pen.ht()
-
-
-# In[ ]:
-
-
-
-
-
-# In[ ]:
-
-
-
-
