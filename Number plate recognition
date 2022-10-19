@@ -1,1 +1,52 @@
-
+pip install opencv-contrib-python
+pip install imutils
+pip install pytesseract
+#Download tesseract and install it.
+import cv2
+import imutils
+import pytesseract
+pytesseract.pytesseract.tesseract_cmd = 'C:\Program Files\Tesseract-OCR\\tesseract'
+image = cv2.imread('test.jpg')                     #We are taking in the image as our input. test.jpg is the name of the image. Feel free to replace it with your own.
+image = imutils.resize(image, width=300 )          # We are resizing our image. image is the image we took as input. For width=300 we are resizing the width of that image to 300 pixels.
+cv2.imshow("original image", image)                #We are displaying the image after setting its width to 300 pixels. original image is the name of the window that displays the image. Feel free to give it your name.
+cv2.waitKey(0)                                      #We are waiting for any key on the keyboard to be pressed to continue executing the code that follows.
+gray_image = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)   #We are creating a variable gray_image. We are then passing our input image to cv2.cvtColor. cv2.COLOR_BGR2GRAY specifies that the image should be converted to grey image.
+cv2.imshow("greyed image", gray_image)                 #We are displaying the image which is already converted to grey.
+cv2.waitKey(0)                                         #We are reducing the noise in the grey image hence smoothening it.
+gray_image = cv2.bilateralFilter(gray_image, 11, 17, 17)  #We are displaying the already smoothened image.
+cv2.imshow("smoothened image", gray_image)                 #We are creating variable edged. We are then passing our smoothened image to cv2.canny to detect the edges in it.
+cv2.waitKey(0)                                              #We are displaying the image with the detected edges.
+edged = cv2.Canny(gray_image, 30, 200) 
+cv2.imshow("edged image", edged)
+cv2.waitKey(0)
+cnts,new = cv2.findContours(edged.copy(), cv2.RETR_LIST, cv2.CHAIN_APPROX_SIMPLE)
+image1=image.copy()
+cv2.drawContours(image1,cnts,-1,(0,255,0),3)
+cv2.imshow("contours",image1)
+cv2.waitKey(0)
+cnts = sorted(cnts, key = cv2.contourArea, reverse = True) [:30]
+screenCnt = None
+image2 = image.copy()
+cv2.drawContours(image2,cnts,-1,(0,255,0),3)
+cv2.imshow("Top 30 contours",image2)
+cv2.waitKey(0)
+i=7
+for c in cnts:
+        perimeter = cv2.arcLength(c, True)
+        approx = cv2.approxPolyDP(c, 0.018 * perimeter, True)
+        if len(approx) == 4: 
+                screenCnt = approx
+ x,y,w,h = cv2.boundingRect(c) 
+new_img=image[y:y+h,x:x+w]
+cv2.imwrite('./'+str(i)+'.png',new_img)
+i+=1
+break
+cv2.drawContours(image, [screenCnt], -1, (0, 255, 0), 3)
+cv2.imshow("image with detected license plate", image)
+cv2.waitKey(0)
+Cropped_loc = './7.png'
+cv2.imshow("cropped", cv2.imread(Cropped_loc))
+plate = pytesseract.image_to_string(Cropped_loc, lang='eng')
+print("Number plate is:", plate)
+cv2.waitKey(0)
+cv2.destroyAllWindows()
